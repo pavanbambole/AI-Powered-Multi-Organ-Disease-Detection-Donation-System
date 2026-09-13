@@ -158,11 +158,16 @@ def login():
         identifier = request.form.get('identifier', '').strip()
         password = request.form.get('password', '').strip()
 
+        if not identifier or not password:
+            flash('Please enter both email/username and password.', 'danger')
+            return render_template('login.html')
+
         user = User.query.filter(
-            (User.email == identifier) | (User.username == identifier)
+            (User.email == identifier.lower()) | (User.username == identifier) | (User.email == identifier)
         ).first()
 
         if user and user.check_password(password):
+            session.permanent = True
             session['user_id'] = user.id
             session['username'] = user.username
             session['role'] = user.role
@@ -212,15 +217,16 @@ def signup():
         new_user = User(
             username=username,
             email=email,
-            full_name=full_name,
+            full_name=full_name or username,
             blood_group=blood_group if validate_blood_group(blood_group) else None,
-            age=int(age) if age.isdigit() else None,
-            gender=gender
+            age=int(age) if str(age).isdigit() else None,
+            gender=gender if gender else None
         )
         new_user.set_password(password)
         db.session.add(new_user)
         db.session.commit()
 
+        session.permanent = True
         session['user_id'] = new_user.id
         session['username'] = new_user.username
         session['role'] = new_user.role
@@ -243,7 +249,11 @@ def demo_dashboard():
 @app.route('/dashboard')
 @login_required
 def dashboard():
-    user = User.query.get(session['user_id'])
+    user = get_current_user()
+    if not user:
+        flash('Please log in to access your dashboard.', 'warning')
+        return redirect(url_for('login'))
+
     recent_records = PredictionRecord.query.filter_by(user_id=user.id)\
         .order_by(PredictionRecord.created_at.desc()).limit(5).all()
 
@@ -260,6 +270,7 @@ def dashboard():
         high_risk_count=high_risk_count,
         reports=reports
     )
+
 
 @app.route('/history')
 def history():

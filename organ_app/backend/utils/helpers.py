@@ -8,16 +8,22 @@ def allowed_file(filename):
 
 def get_current_user():
     """Retrieve current user from Bearer JWT token or Flask session."""
-    from database import User
+    from database import User, db
+    user_id = None
     auth_header = request.headers.get('Authorization', '')
     if auth_header.startswith('Bearer '):
         token = auth_header.split(' ', 1)[1].strip()
         user_id = User.verify_token(token)
-        if user_id:
-            return User.query.get(user_id)
-    if 'user_id' in session:
-        return User.query.get(session['user_id'])
+    elif 'user_id' in session:
+        user_id = session.get('user_id')
+
+    if user_id:
+        try:
+            return db.session.get(User, int(user_id)) if hasattr(db.session, 'get') else User.query.get(int(user_id))
+        except Exception:
+            return None
     return None
+
 
 def login_required(f):
     """Session or token-based authentication check."""
