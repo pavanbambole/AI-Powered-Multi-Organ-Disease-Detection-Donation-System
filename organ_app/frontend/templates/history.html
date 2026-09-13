@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+
+{% block title %}Diagnostic History & Reports | MultiOrganAI{% endblock %}
+
+{% block content %}
+<section class="section">
+  <div class="container">
+    <div style="display: grid; grid-template-columns: 280px 1fr; gap: 32px; align-items: flex-start;">
+      <!-- Sidebar -->
+      {% include 'sidebar.html' %}
+
+      <!-- History Content -->
+      <div>
+        <div class="section-header" style="text-align: left; margin-bottom: 24px;">
+          <span class="section-tag">Longitudinal Records</span>
+          <h1 class="section-title" style="font-size: 28px;">Diagnostic Test History</h1>
+          <p class="section-desc">
+            Complete record of your multi-organ assessments, risk indices, and generated clinical laboratory reports.
+          </p>
+        </div>
+
+        <div class="promo-card">
+          {% if records %}
+            <div style="display: flex; flex-direction: column; gap: 16px;">
+              {% for record in records %}
+                <div style="border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 20px; background: var(--bg-surface-subtle); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+                  <div>
+                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 6px;">
+                      <strong style="font-size: 17px; text-transform: capitalize; color: var(--text-main);">
+                        {{ record.organ_type }} Diagnostic Assessment
+                      </strong>
+                      {% if record.risk_level == 'High' %}
+                        <span class="badge badge-critical">High Risk ({{ record.risk_score }}%)</span>
+                      {% elif record.risk_level == 'Moderate' %}
+                        <span class="badge badge-warning">Moderate Risk ({{ record.risk_score }}%)</span>
+                      {% else %}
+                        <span class="badge badge-normal">Low Risk ({{ record.risk_score }}%)</span>
+                      {% endif %}
+                    </div>
+
+                    <div style="font-size: 13.5px; color: var(--text-muted); margin-bottom: 6px;">
+                      {{ record.prediction_label }}
+                    </div>
+
+                    <div style="font-size: 12px; color: var(--text-subtle);">
+                      Date: {{ record.created_at.strftime('%B %d, %Y at %H:%M UTC') }} &bull; AI Confidence: {{ record.confidence }}%
+                    </div>
+                  </div>
+
+                  <div>
+                    {% if record.pdf_filename %}
+                      <a href="{{ url_for('api_download_report', filename=record.pdf_filename) }}" target="_blank" class="btn btn-primary" style="padding: 8px 16px; font-size: 13px;">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                        Download PDF Report
+                      </a>
+                    {% endif %}
+                  </div>
+                </div>
+              {% endfor %}
+            </div>
+          {% else %}
+            <div style="text-align: center; padding: 48px 20px;">
+              <div style="font-size: 36px; margin-bottom: 12px;">📊</div>
+              <h3 style="font-size: 18px; margin-bottom: 6px;">No Diagnostic Records Found</h3>
+              <p style="font-size: 14px; color: var(--text-muted); margin-bottom: 20px;">
+                You haven't run any multi-organ predictions yet.
+              </p>
+              <a href="{{ url_for('demo_dashboard') }}" class="btn btn-primary">Run First Screening</a>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

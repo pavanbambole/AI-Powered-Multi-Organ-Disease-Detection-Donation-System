@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+
+{% block title %}Contact Us & Hospital Partnerships | MultiOrganAI{% endblock %}
+
+{% block content %}
+<section class="section">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-tag">Get in Touch</span>
+      <h1 class="section-title">Clinical Support &amp; Hospital Inquiries</h1>
+      <p class="section-desc">
+        Connect with our biomedical AI team for clinical validation partnerships, hospital EMR integrations, or urgent organ network coordination.
+      </p>
+    </div>
+
+    <div class="two-column-promo">
+      <!-- Contact Form -->
+      <div class="promo-card">
+        <h3 style="font-size: 22px; margin-bottom: 18px;">Send a Message</h3>
+        <form method="POST" action="{{ url_for('contact') }}">
+          <div class="form-group" style="margin-bottom: 14px;">
+            <label for="name">Your Name</label>
+            <input type="text" id="name" name="name" class="form-input" placeholder="e.g. Dr. Jennifer Adams" required>
+          </div>
+
+          <div class="form-group" style="margin-bottom: 14px;">
+            <label for="email">Email Address</label>
+            <input type="email" id="email" name="email" class="form-input" placeholder="e.g. jadams@healthnetwork.org" required>
+          </div>
+
+          <div class="form-group" style="margin-bottom: 14px;">
+            <label for="subject">Subject / Inquiry Type</label>
+            <select id="subject" name="subject" class="form-select" required>
+              <option value="Hospital Partnership">Hospital EMR Integration &amp; Partnership</option>
+              <option value="Organ Procurement Inquiry">Organ Procurement Registry Connection</option>
+              <option value="Clinical Validation">Clinical Validation &amp; Research</option>
+              <option value="General Support">General Support &amp; Feedback</option>
+            </select>
+          </div>
+
+          <div class="form-group" style="margin-bottom: 20px;">
+            <label for="message">Message</label>
+            <textarea id="message" name="message" rows="5" class="form-textarea" placeholder="How can our clinical AI team assist you?" required></textarea>
+          </div>
+
+          <button type="submit" class="btn btn-primary" style="width: 100%;">
+            Send Inquiry
+          </button>
+        </form>
+      </div>
+
+      <!-- Contact Info Cards -->
+      <div style="display: flex; flex-direction: column; gap: 20px;">
+        <div class="promo-card">
+          <h4 style="font-size: 16px; margin-bottom: 8px; color: var(--primary);">🏥 Clinical Integration Center</h4>
+          <p style="font-size: 13.5px; color: var(--text-muted); line-height: 1.6;">
+            MultiOrganAI Health Systems<br>
+            Medical Science Pavilion, Suite 400<br>
+            Boston, MA 02115, United States
+          </p>
+          <p style="font-size: 13.5px; color: var(--text-muted); margin-top: 8px;">
+            <strong>Email:</strong> clinical-support@multiorganai.health<br>
+            <strong>Direct Line:</strong> +1 (800) 555-MOAI (6624)
+          </p>
+        </div>
+
+        <div class="promo-card" style="border-left: 4px solid var(--accent-rose);">
+          <h4 style="font-size: 16px; margin-bottom: 8px; color: var(--accent-rose);">🚨 Emergency Organ Match Hotline</h4>
+          <p style="font-size: 13.5px; color: var(--text-muted); line-height: 1.6;">
+            Dedicated 24/7 hotline for authorized transplant coordinators, ICU attendings, and organ procurement organizations (OPOs).
+          </p>
+          <div style="font-size: 18px; font-weight: 800; color: var(--accent-rose); margin-top: 10px;">
+            +1 (888) 99-ORGAN (67426)
+          </div>
+        </div>
+
+        <div class="promo-card">
+          <h4 style="font-size: 16px; margin-bottom: 8px; color: var(--accent-blue);">🔒 Compliance &amp; Security</h4>
+          <p style="font-size: 13px; color: var(--text-muted); line-height: 1.5;">
+            End-to-end encrypted telemetry adhering to HIPAA Title II and EU GDPR standards for electronic protected health information (ePHI).
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

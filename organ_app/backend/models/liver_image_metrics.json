@@ -1,0 +1,44 @@
+{
+  "organ": "liver",
+  "model_name": "RESNET18-Liver-Ultrasound",
+  "architecture": "resnet18",
+  "classes": [
+    "abnormal",
+    "normal"
+  ],
+  "class_to_idx": {
+    "abnormal": 0,
+    "normal": 1
+  },
+  "validation_accuracy": 100.0,
+  "test_accuracy": 95.0,
+  "precision": 95.45,
+  "recall": 95.0,
+  "f1_score": 94.99,
+  "confusion_matrix": [
+    [
+      9,
+      1
+    ],
+    [
+      0,
+      10
+    ]
+  ],
+  "per_class_performance": {
+    "abnormal": {
+      "precision": 100.0,
+      "recall": 90.0,
+      "f1_score": 94.74,
+      "samples": 10
+    },
+    "normal": {
+      "precision": 90.91,
+      "recall": 100.0,
+      "f1_score": 95.24,
+      "samples": 10
+    }
+  },
+  "test_samples": 20,
+  "trained_at": "2026-09-13 13:49:38 UTC"
+}

@@ -1,0 +1,43 @@
+{
+  "organ": "kidney",
+  "champion_model": "resnet18",
+  "classes": [
+    "normal",
+    "stone"
+  ],
+  "class_to_idx": {
+    "normal": 0,
+    "stone": 1
+  },
+  "validation_accuracy": 100.0,
+  "test_accuracy": 100.0,
+  "precision": 100.0,
+  "recall": 100.0,
+  "f1_score": 100.0,
+  "confusion_matrix": [
+    [
+      7,
+      0
+    ],
+    [
+      0,
+      7
+    ]
+  ],
+  "per_class_performance": {
+    "normal": {
+      "precision": 100.0,
+      "recall": 100.0,
+      "f1_score": 100.0,
+      "samples": 7
+    },
+    "stone": {
+      "precision": 100.0,
+      "recall": 100.0,
+      "f1_score": 100.0,
+      "samples": 7
+    }
+  },
+  "test_samples": 14,
+  "evaluated_at": "2026-09-13 14:59:03 UTC"
+}

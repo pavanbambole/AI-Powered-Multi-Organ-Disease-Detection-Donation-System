@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+
+{% block title %}Medical Profile | MultiOrganAI{% endblock %}
+
+{% block content %}
+<section class="section">
+  <div class="container">
+    <div style="display: grid; grid-template-columns: 280px 1fr; gap: 32px; align-items: flex-start;">
+      <!-- Sidebar -->
+      {% include 'sidebar.html' %}
+
+      <!-- Profile Form -->
+      <div>
+        <div class="section-header" style="text-align: left; margin-bottom: 24px;">
+          <span class="section-tag">User Information</span>
+          <h1 class="section-title" style="font-size: 28px;">Medical Profile Settings</h1>
+          <p class="section-desc">
+            Keep your clinical metadata updated for personalized risk scoring and organ donation pledge matching.
+          </p>
+        </div>
+
+        <div class="promo-card">
+          <form method="POST" action="{{ url_for('profile') }}">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-bottom: 16px;">
+              <div class="form-group">
+                <label for="full_name">Full Name</label>
+                <input type="text" id="full_name" name="full_name" class="form-input" value="{{ user.full_name or '' }}" required>
+              </div>
+
+              <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" class="form-input" value="{{ user.username }}" disabled style="opacity: 0.7;">
+              </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-bottom: 16px;">
+              <div class="form-group">
+                <label for="email">Email Address</label>
+                <input type="email" id="email" class="form-input" value="{{ user.email }}" disabled style="opacity: 0.7;">
+              </div>
+
+              <div class="form-group">
+                <label for="blood_group">Blood Group (ABO/Rh)</label>
+                <select id="blood_group" name="blood_group" class="form-select">
+                  <option value="O+" {% if user.blood_group == 'O+' %}selected{% endif %}>O Positive (O+)</option>
+                  <option value="O-" {% if user.blood_group == 'O-' %}selected{% endif %}>O Negative (O-)</option>
+                  <option value="A+" {% if user.blood_group == 'A+' %}selected{% endif %}>A Positive (A+)</option>
+                  <option value="A-" {% if user.blood_group == 'A-' %}selected{% endif %}>A Negative (A-)</option>
+                  <option value="B+" {% if user.blood_group == 'B+' %}selected{% endif %}>B Positive (B+)</option>
+                  <option value="B-" {% if user.blood_group == 'B-' %}selected{% endif %}>B Negative (B-)</option>
+                  <option value="AB+" {% if user.blood_group == 'AB+' %}selected{% endif %}>AB Positive (AB+)</option>
+                  <option value="AB-" {% if user.blood_group == 'AB-' %}selected{% endif %}>AB Negative (AB-)</option>
+                </select>
+              </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-bottom: 24px;">
+              <div class="form-group">
+                <label for="age">Age (Years)</label>
+                <input type="number" id="age" name="age" class="form-input" value="{{ user.age or '' }}" min="1" max="120">
+              </div>
+
+              <div class="form-group">
+                <label for="gender">Gender</label>
+                <select id="gender" name="gender" class="form-select">
+                  <option value="Male" {% if user.gender == 'Male' %}selected{% endif %}>Male</option>
+                  <option value="Female" {% if user.gender == 'Female' %}selected{% endif %}>Female</option>
+                  <option value="Other" {% if user.gender == 'Other' %}selected{% endif %}>Other</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Donor Pledge Checkbox -->
+            <div style="background: var(--bg-surface-subtle); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 18px; margin-bottom: 28px;">
+              <label style="display: flex; align-items: center; gap: 12px; cursor: pointer; font-size: 14px; font-weight: 600;">
+                <input type="checkbox" name="is_donor" value="true" {% if user.is_donor %}checked{% endif %} style="width: 18px; height: 18px; accent-color: var(--primary);">
+                <span>Yes, I pledge to be a registered voluntary organ donor in case of clinical viability.</span>
+              </label>
+              <p style="font-size: 12.5px; color: var(--text-muted); margin-top: 6px; margin-left: 30px;">
+                Your pledge is registered with National Organ Procurement guidelines. You can update this preference at any time.
+              </p>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-lg">
+              Save Profile Changes
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

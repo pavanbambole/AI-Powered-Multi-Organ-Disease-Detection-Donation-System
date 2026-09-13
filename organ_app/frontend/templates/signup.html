@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+
+{% block title %}Sign Up | MultiOrganAI{% endblock %}
+
+{% block content %}
+<section class="section" style="min-height: 80vh; display: flex; align-items: center;">
+  <div class="container" style="max-width: 540px;">
+    <div class="promo-card" style="box-shadow: var(--shadow-xl); padding: 38px;">
+      <div style="text-align: center; margin-bottom: 24px;">
+        <img src="{{ url_for('static', filename='img/logo.svg') }}" alt="MultiOrganAI" style="height: 46px; margin-bottom: 10px;">
+        <h2 style="font-size: 26px; font-weight: 800;">Create Your Account</h2>
+        <p style="font-size: 14px; color: var(--text-muted);">Start monitoring your multi-organ health with calibrated AI</p>
+      </div>
+
+      <form method="POST" action="{{ url_for('signup') }}">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px;">
+          <div class="form-group">
+            <label for="full_name">Full Name</label>
+            <input type="text" id="full_name" name="full_name" class="form-input" placeholder="e.g. Dr. Alex Morgan" required>
+          </div>
+          <div class="form-group">
+            <label for="username">Username</label>
+            <input type="text" id="username" name="username" class="form-input" placeholder="e.g. alexmorgan" required>
+          </div>
+        </div>
+
+        <div class="form-group" style="margin-bottom: 14px;">
+          <label for="email">Email Address</label>
+          <input type="email" id="email" name="email" class="form-input" placeholder="alex@healthnetwork.com" required>
+        </div>
+
+        <div class="form-group" style="margin-bottom: 14px;">
+          <label for="password">Password</label>
+          <input type="password" id="password" name="password" class="form-input" placeholder="Create a secure password" required minlength="6">
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 22px;">
+          <div class="form-group">
+            <label for="blood_group">Blood Group</label>
+            <select id="blood_group" name="blood_group" class="form-select">
+              <option value="O+">O+</option>
+              <option value="O-">O-</option>
+              <option value="A+">A+</option>
+              <option value="A-">A-</option>
+              <option value="B+">B+</option>
+              <option value="B-">B-</option>
+              <option value="AB+">AB+</option>
+              <option value="AB-">AB-</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="age">Age</label>
+            <input type="number" id="age" name="age" class="form-input" placeholder="e.g. 34">
+          </div>
+          <div class="form-group">
+            <label for="gender">Gender</label>
+            <select id="gender" name="gender" class="form-select">
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-lg" style="width: 100%; margin-bottom: 16px;">
+          Complete Registration
+        </button>
+
+        <div style="text-align: center; font-size: 13.5px; color: var(--text-muted);">
+          Already have an account? <a href="{{ url_for('login') }}" style="color: var(--primary); font-weight: 600;">Log in</a>
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
+{% endblock %}

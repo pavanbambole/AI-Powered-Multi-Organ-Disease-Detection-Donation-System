@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 340 70" fill="none">
+  <defs>
+    <linearGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#059669" />
+      <stop offset="100%" stop-color="#10b981" />
+    </linearGradient>
+    <filter id="logoShadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#059669" flood-opacity="0.2"/>
+    </filter>
+  </defs>
+
+  <!-- Medical Cross Shield Icon -->
+  <g transform="translate(6, 6)" filter="url(#logoShadow)">
+    <rect x="0" y="0" width="56" height="56" rx="14" fill="#ecfdf5" stroke="#10b981" stroke-width="2"/>
+    <!-- Medical Cross -->
+    <path d="M28 14 L28 42 M14 28 L42 28" stroke="#059669" stroke-width="6" stroke-linecap="round"/>
+    <!-- Pulse wave inside -->
+    <path d="M18 28 L23 28 L26 21 L30 35 L33 28 L38 28" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+
+  <!-- Typography -->
+  <text x="74" y="36" font-family="-apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', Roboto, sans-serif" font-weight="800" font-size="25" fill="#0f172a" letter-spacing="-0.5">
+    MultiOrgan<tspan fill="#059669">AI</tspan>
+  </text>
+  <text x="75" y="52" font-family="-apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', Roboto, sans-serif" font-weight="500" font-size="9.5" fill="#64748b" letter-spacing="0.2">
+    AI-Powered Multi-Organ Disease Detection &amp; Donation
+  </text>
+</svg>

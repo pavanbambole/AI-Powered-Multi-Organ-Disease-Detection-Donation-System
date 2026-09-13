@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}MultiOrganAI | AI-Powered Multi-Organ Disease Detection & Organ Matching System{% endblock %}</title>
+  <meta name="description" content="Early AI-driven detection of Kidney and Liver diseases, OCR lab report parsing, and intelligent organ donor-recipient matching.">
+  <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='img/icons/kidney.svg') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  {% block extra_css %}{% endblock %}
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <header class="navbar">
+    <div class="container navbar-inner">
+      <a href="{{ url_for('index') }}" class="nav-brand">
+        <img src="{{ url_for('static', filename='img/logo.svg') }}" alt="MultiOrganAI Logo" class="brand-logo-img">
+      </a>
+
+      <!-- Desktop Nav Links -->
+      <ul class="nav-links">
+        <li><a href="{{ url_for('index') }}" class="nav-link {% if request.endpoint == 'index' %}active{% endif %}">Home</a></li>
+        <li><a href="{{ url_for('features') }}" class="nav-link {% if request.endpoint == 'features' %}active{% endif %}">Features</a></li>
+        <li><a href="{{ url_for('about') }}" class="nav-link {% if request.endpoint == 'about' %}active{% endif %}">About System</a></li>
+        <li><a href="{{ url_for('how_it_works') }}" class="nav-link {% if request.endpoint == 'how_it_works' %}active{% endif %}">How It Works</a></li>
+        <li><a href="{{ url_for('contact') }}" class="nav-link {% if request.endpoint == 'contact' %}active{% endif %}">Contact Us</a></li>
+      </ul>
+
+      <!-- Action Buttons & Theme Switcher -->
+      <div class="nav-actions">
+        <!-- Sun/Moon Theme Toggle -->
+        <button id="themeToggleBtn" class="theme-toggle-btn" title="Toggle Light/Dark Theme" aria-label="Toggle Theme">
+          <span id="themeIcon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+            </svg>
+          </span>
+        </button>
+
+        {% if current_user %}
+          <a href="{{ url_for('dashboard') }}" class="btn btn-outline">Dashboard</a>
+          <a href="{{ url_for('logout') }}" class="btn btn-primary">Logout</a>
+        {% else %}
+          <a href="{{ url_for('login') }}" id="navLoginBtn" class="btn btn-outline">Login</a>
+          <a href="{{ url_for('signup') }}" class="btn btn-primary">Get Started</a>
+        {% endif %}
+
+        <button id="mobileMenuBtn" class="mobile-menu-btn" aria-label="Toggle Navigation Menu">☰</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Flash Messaging -->
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <div class="container" style="margin-top: 18px;">
+        {% for category, message in messages %}
+          <div style="padding: 12px 18px; border-radius: 8px; font-size: 14px; margin-bottom: 12px;
+            {% if category == 'danger' %}background: #fef2f2; color: #991b1b; border-left: 4px solid #ef4444;
+            {% elif category == 'warning' %}background: #fffbeb; color: #92400e; border-left: 4px solid #f59e0b;
+            {% elif category == 'success' %}background: #ecfdf5; color: #065f46; border-left: 4px solid #10b981;
+            {% else %}background: #f0f9ff; color: #0369a1; border-left: 4px solid #0284c7;{% endif %}">
+            {{ message }}
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% endwith %}
+
+  <!-- Main Content Block -->
+  <main>
+    {% block content %}{% endblock %}
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <img src="{{ url_for('static', filename='img/logo.svg') }}" alt="MultiOrganAI" style="height: 42px;">
+          <p>
+            Pioneering early multi-organ disease detection and ethical donor-recipient matching powered by verified clinical machine intelligence.
+          </p>
+        </div>
+
+        <div class="footer-col">
+          <h4>Medical AI</h4>
+          <ul>
+            <li><a href="{{ url_for('demo_dashboard') }}">Kidney Disease Detection</a></li>
+            <li><a href="{{ url_for('demo_dashboard') }}">Cardiovascular Risk AI</a></li>
+            <li><a href="{{ url_for('demo_dashboard') }}">Liver Pathology Analysis</a></li>
+            <li><a href="{{ url_for('demo_dashboard') }}">OCR Lab Report Reader</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h4>Clinical Intelligence</h4>
+          <ul>
+            <li><a href="{{ url_for('features') }}">Multi-Organ Screening</a></li>
+            <li><a href="{{ url_for('features') }}">Automated PDF Reports</a></li>
+            <li><a href="{{ url_for('features') }}">Biomarker Reference Ranges</a></li>
+            <li><a href="{{ url_for('features') }}">Diagnostic Guidance</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h4>Platform &amp; Legal</h4>
+          <ul>
+            <li><a href="{{ url_for('contact') }}">Hospital Partnerships</a></li>
+            <li><a href="{{ url_for('contact') }}">Emergency Helpline</a></li>
+            <li><a href="{{ url_for('contact') }}">HIPAA &amp; GDPR Compliant</a></li>
+            <li><a href="{{ url_for('contact') }}">Clinical Decision Support</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <p>&copy; 2026 MultiOrganAI. All rights reserved. For clinical decision support.</p>
+        <p>HIPAA &amp; GDPR Compliant Architecture</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="{{ url_for('static', filename='js/theme-toggle.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+  {% block extra_js %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,303 @@
+{% extends 'base.html' %}
+
+{% block title %}MultiOrganAI | AI-Powered Multi-Organ Disease Detection & Organ Matching System{% endblock %}
+
+{% block content %}
+<!-- HERO SECTION -->
+<section class="hero-section">
+  <div class="container hero-grid">
+    <!-- Left Hero Text Content -->
+    <div class="hero-content">
+      <div class="hero-pill">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"></path>
+        </svg>
+        AI Healthcare Revolution
+      </div>
+
+      <h1 class="hero-title">
+        AI-Powered
+        <span class="hero-title-highlight">Multi-Organ</span>
+        Disease Detection
+      </h1>
+
+      <p class="hero-subtitle">
+        Detect potential diseases early in Kidney and Liver using advanced Artificial Intelligence. Early detection leads to better treatment and saves lives.
+      </p>
+
+      <!-- 3 Micro Value Badges -->
+      <div class="hero-badges-row">
+        <div class="hero-badge-card">
+          <svg class="hero-badge-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="9"></circle>
+            <path d="M12 3a9 9 0 0 1 9 9"></path>
+            <circle cx="12" cy="12" r="3"></circle>
+          </svg>
+          <div>
+            <div class="hero-badge-title">Kidney &amp; Liver</div>
+            <div class="hero-badge-desc">Dual AI Models</div>
+          </div>
+        </div>
+
+        <div class="hero-badge-card">
+          <svg class="hero-badge-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+          </svg>
+          <div class="hero-badge-text">
+            <strong>Fast &amp; Accurate</strong>
+            <span>Instant Results</span>
+          </div>
+        </div>
+
+        <div class="hero-badge-card">
+          <svg class="hero-badge-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+          </svg>
+          <div class="hero-badge-text">
+            <strong>Secure &amp; Private</strong>
+            <span>100% Confidential</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Hero Action Buttons -->
+      <div class="hero-cta-group">
+        <a href="{{ url_for('signup') }}" class="btn btn-primary btn-lg">
+          Get Started
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+            <polyline points="12 5 19 12 12 19"></polyline>
+          </svg>
+        </a>
+
+        <a href="{{ url_for('login') }}" class="btn btn-outline btn-lg">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+            <circle cx="12" cy="7" r="4"></circle>
+          </svg>
+          Login
+        </a>
+      </div>
+    </div>
+
+    <!-- Right Hero Visual: Professional Doctor with Clinical Tablet -->
+    <div class="hero-visual-wrapper">
+      <div class="hero-clinical-frame">
+        <img src="{{ url_for('static', filename='img/clinical_hero.jpg') }}" alt="Clinical Doctor Reviewing Multi-Organ Diagnostic Biomarkers" class="hero-clinical-img">
+        
+        <!-- Clinical Action Bar -->
+        <div class="clinical-action-bar">
+          <span class="label">Diagnostic Panels:</span>
+          <div class="clinical-quick-links">
+            <a href="{{ url_for('dashboard') }}?organ=kidney" class="clinical-quick-btn">
+              <span>🫘</span> Renal Panel
+            </a>
+            <a href="{{ url_for('dashboard') }}?organ=liver" class="clinical-quick-btn">
+              <span>🫀</span> Hepatic Panel
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION: ADVANCED AI ANALYSIS FOR MULTIPLE ORGANS -->
+<section class="section" style="background: var(--bg-surface-subtle);">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-tag">Clinical Diagnostic Intelligence</span>
+      <h2 class="section-title">Anatomical Organ Analysis &amp; Biomarker Screening</h2>
+      <p class="section-desc">
+        Trained on rigorous clinical data and validated against medical guidelines to empower early intervention.
+      </p>
+    </div>
+
+    <div class="organ-cards-grid">
+      <!-- Kidney Card -->
+      <div class="organ-card">
+        <div class="organ-card-img-wrap">
+          <img src="{{ url_for('static', filename='img/realistic_kidney.jpg') }}" alt="Human Kidney Anatomy - Renal Cortex, Medulla, and Nephrons" class="organ-card-img">
+          <span class="organ-card-badge">Renal Profile</span>
+        </div>
+        <div class="organ-card-body">
+          <h3 class="organ-card-title">
+            Kidney
+            <span>Renal Pathology &amp; Function Assessment</span>
+          </h3>
+          <p class="organ-card-text">
+            Clinical AI analysis of renal function biomarkers to detect potential kidney diseases early. Evaluates serum creatinine, blood urea, albumin, electrolytes, and urinalysis equilibrium.
+          </p>
+          <div class="organ-biomarkers-list">
+            <span class="organ-biomarker-chip">Creatinine</span>
+            <span class="organ-biomarker-chip">Blood Urea</span>
+            <span class="organ-biomarker-chip">Albumin</span>
+            <span class="organ-biomarker-chip">Electrolytes</span>
+            <span class="organ-biomarker-chip">Urine Sp. Gr.</span>
+          </div>
+          <a href="{{ url_for('dashboard') }}?organ=kidney" class="organ-card-link">
+            Start Renal Screening
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+          </a>
+        </div>
+      </div>
+
+      <!-- Liver Card -->
+      <div class="organ-card">
+        <div class="organ-card-img-wrap">
+          <img src="{{ url_for('static', filename='img/realistic_liver.jpg') }}" alt="Human Liver Anatomy - Hepatic Lobes, Gallbladder, and Portal Vessels" class="organ-card-img">
+          <span class="organ-card-badge">Hepatic Panel</span>
+        </div>
+        <div class="organ-card-body">
+          <h3 class="organ-card-title">
+            Liver
+            <span>Hepatic Pathology &amp; Enzyme Screening</span>
+          </h3>
+          <p class="organ-card-text">
+            Analyze liver function tests and metabolic biomarkers to detect liver conditions accurately. Interprets transaminases (ALT, AST), alkaline phosphatase, direct/total bilirubin, and protein fractions.
+          </p>
+          <div class="organ-biomarkers-list">
+            <span class="organ-biomarker-chip">ALT / SGPT</span>
+            <span class="organ-biomarker-chip">AST / SGOT</span>
+            <span class="organ-biomarker-chip">Total Bilirubin</span>
+            <span class="organ-biomarker-chip">Alkaline Phos.</span>
+            <span class="organ-biomarker-chip">A/G Ratio</span>
+          </div>
+          <a href="{{ url_for('dashboard') }}?organ=liver" class="organ-card-link">
+            Start Hepatic Screening
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+          </a>
+        </div>
+      </div>
+
+      <!-- Heart Card -->
+      <div class="organ-card">
+        <div class="organ-card-img-wrap">
+          <img src="{{ url_for('static', filename='img/realistic_heart.jpg') }}" alt="Human Heart Anatomy - Atria, Ventricles, Aorta, and Coronary Vasculature" class="organ-card-img">
+          <span class="organ-card-badge">Cardiovascular Panel</span>
+        </div>
+        <div class="organ-card-body">
+          <h3 class="organ-card-title">
+            Heart
+            <span>Cardiovascular Health &amp; Hemodynamics</span>
+          </h3>
+          <p class="organ-card-text">
+            Evaluates cardiovascular wellness parameters, arterial blood pressure dynamics, vascular health indices, and lifestyle risk factors for comprehensive preventative health support.
+          </p>
+          <div class="organ-biomarkers-list">
+            <span class="organ-biomarker-chip">Blood Pressure</span>
+            <span class="organ-biomarker-chip">Heart Rate</span>
+            <span class="organ-biomarker-chip">Lipid Profile</span>
+            <span class="organ-biomarker-chip">Vascular Health</span>
+            <span class="organ-biomarker-chip">Risk Index</span>
+          </div>
+          <a href="{{ url_for('features') }}" class="organ-card-link">
+            Learn Clinical Features
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION: CLINICAL FEATURES OVERVIEW -->
+<section class="section" style="background: var(--bg-surface-subtle);">
+  <div class="container">
+    <div class="promo-card" style="max-width: 960px; margin: 0 auto;">
+      <div class="promo-header" style="text-align: center; margin-bottom: 32px;">
+        <span class="promo-tag">Powerful Features</span>
+        <h3 class="promo-title">Comprehensive Clinical Intelligence</h3>
+        <p style="color: var(--text-muted); font-size: 14.5px; max-width: 600px; margin: 8px auto 0;">
+          Advanced diagnostic screening, longitudinal biomarker analysis, and physician-grade automated reporting.
+        </p>
+      </div>
+
+      <div class="feature-list-grid">
+        <div class="feature-item">
+          <div class="feature-icon-circle">🧠</div>
+          <div>
+            <h4>AI-Powered Analysis</h4>
+            <p>Advanced ML models for accurate disease prediction.</p>
+          </div>
+        </div>
+
+        <div class="feature-item">
+          <div class="feature-icon-circle">📈</div>
+          <div>
+            <h4>Health Monitoring</h4>
+            <p>Track your health history and monitor progress over time.</p>
+          </div>
+        </div>
+
+        <div class="feature-item">
+          <div class="feature-icon-circle">⚡</div>
+          <div>
+            <h4>Instant Results</h4>
+            <p>Get fast and accurate health insights within seconds.</p>
+          </div>
+        </div>
+
+        <div class="feature-item">
+          <div class="feature-icon-circle">🔒</div>
+          <div>
+            <h4>Secure &amp; Private</h4>
+            <p>Your medical data is encrypted and always protected.</p>
+          </div>
+        </div>
+
+        <div class="feature-item">
+          <div class="feature-icon-circle">📑</div>
+          <div>
+            <h4>Smart Reports</h4>
+            <p>Download detailed clinical AI analysis PDF reports.</p>
+          </div>
+        </div>
+
+        <div class="feature-item">
+          <div class="feature-icon-circle">🫀</div>
+          <div>
+            <h4>Dual-Organ Intelligence</h4>
+            <p>Comprehensive analysis for Kidney and Liver.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION: TRUSTED METRICS -->
+<section class="stats-section">
+  <div class="container">
+    <div class="stats-card-box">
+      <div class="stats-title-label">Trusted by Patients and Healthcare Professionals</div>
+      <div class="stats-grid">
+        <div class="stat-item">
+          <div class="stat-icon-wrapper" style="background: #ecfdf5; color: #059669;">👥</div>
+          <div class="stat-num">{{ "{:,}".format(stats.patients_analyzed) }}+</div>
+          <div class="stat-label">Patients Analyzed</div>
+        </div>
+
+        <div class="stat-item">
+          <div class="stat-icon-wrapper" style="background: #f0f9ff; color: #0284c7;">🏥</div>
+          <div class="stat-num">{{ stats.partner_hospitals }}+</div>
+          <div class="stat-label">Partner Hospitals</div>
+        </div>
+
+        <div class="stat-item">
+          <div class="stat-icon-wrapper" style="background: #fdf4ff; color: #a21caf;">💜</div>
+          <div class="stat-num">{{ "{:,}".format(stats.organ_requests) }}+</div>
+          <div class="stat-label">Organ Requests</div>
+        </div>
+
+        <div class="stat-item">
+          <div class="stat-icon-wrapper" style="background: #fff7ed; color: #c2410c;">🛡️</div>
+          <div class="stat-num">24/7</div>
+          <div class="stat-label">AI Health Support</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

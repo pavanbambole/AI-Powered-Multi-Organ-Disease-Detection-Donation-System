@@ -1,0 +1,17 @@
+[
+  {
+    "architecture": "resnet18",
+    "val_accuracy": 100.0,
+    "val_loss": 0.0185
+  },
+  {
+    "architecture": "efficientnet_b0",
+    "val_accuracy": 100.0,
+    "val_loss": 0.0367
+  },
+  {
+    "architecture": "mobilenet_v2",
+    "val_accuracy": 100.0,
+    "val_loss": 0.0382
+  }
+]

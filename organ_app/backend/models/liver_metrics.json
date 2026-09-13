@@ -1,0 +1,11 @@
+{
+  "organ": "liver",
+  "best_model": "ExtraTrees",
+  "train_accuracy": 0.9934,
+  "cv_accuracy": 0.6973,
+  "test_accuracy": 0.7368,
+  "precision": 0.7339,
+  "recall": 0.9877,
+  "f1_score": 0.8421,
+  "roc_auc": 0.777
+}

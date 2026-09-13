@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+
+{% block title %}How It Works | MultiOrganAI Pipeline{% endblock %}
+
+{% block content %}
+<section class="section">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-tag">Clinical AI Architecture</span>
+      <h1 class="section-title">How MultiOrganAI Works</h1>
+      <p class="section-desc">
+        A transparent look at the multi-stage machine learning and natural language OCR pipeline that powers our diagnostics.
+      </p>
+    </div>
+
+    <!-- 4 Major Pipeline Stages Detailed -->
+    <div style="display: flex; flex-direction: column; gap: 32px; max-width: 900px; margin: 0 auto 60px auto;">
+      <!-- Stage 1 -->
+      <div class="promo-card" style="display: flex; gap: 24px; align-items: flex-start;">
+        <div class="step-number-badge" style="margin: 0; flex-shrink: 0;">01</div>
+        <div>
+          <h3 style="font-size: 20px; margin-bottom: 6px;">Data Ingestion &amp; OCR Normalization</h3>
+          <p style="font-size: 14px; color: var(--text-muted); line-height: 1.6;">
+            Users can submit clinical values manually through calibrated dynamic forms or upload diagnostic report images (PNG, JPG, PDF). Our preprocessing engine applies adaptive thresholding, contrast enhancement, and Optical Character Recognition (pytesseract) to identify laboratory markers (e.g., serum creatinine, ALT/AST, cholesterol) across diverse hospital formats.
+          </p>
+        </div>
+      </div>
+
+      <!-- Stage 2 -->
+      <div class="promo-card" style="display: flex; gap: 24px; align-items: flex-start;">
+        <div class="step-number-badge" style="margin: 0; flex-shrink: 0; background: #0284c7;">02</div>
+        <div>
+          <h3 style="font-size: 20px; margin-bottom: 6px;">Feature Scaling &amp; Organ Model Inference</h3>
+          <p style="font-size: 14px; color: var(--text-muted); line-height: 1.6;">
+            Normalized parameters pass into organ-specific supervised learning ensembles (Gradient Boosting and Random Forests). These models were trained with standard clinical cohorts to map multi-dimensional biomarker non-linearities into a calibrated risk score (0% to 100%) and confidence index.
+          </p>
+        </div>
+      </div>
+
+      <!-- Stage 3 -->
+      <div class="promo-card" style="display: flex; gap: 24px; align-items: flex-start;">
+        <div class="step-number-badge" style="margin: 0; flex-shrink: 0; background: #d97706;">03</div>
+        <div>
+          <h3 style="font-size: 20px; margin-bottom: 6px;">Clinical Analyzer &amp; Risk Stratification</h3>
+          <p style="font-size: 14px; color: var(--text-muted); line-height: 1.6;">
+            The medical analyzer evaluates each parameter against established physiological reference intervals. Out-of-range biomarkers are classified as elevated, low, or critically aberrant. Tailored lifestyle interventions, dietary protocols (e.g., sodium restriction, glycemic management), and suggested diagnostic follow-ups are automatically synthesized.
+          </p>
+        </div>
+      </div>
+
+      <!-- Stage 4 -->
+      <div class="promo-card" style="display: flex; gap: 24px; align-items: flex-start;">
+        <div class="step-number-badge" style="margin: 0; flex-shrink: 0; background: #dc2626;">04</div>
+        <div>
+          <h3 style="font-size: 20px; margin-bottom: 6px;">Ethical Organ Matching Engine</h3>
+          <p style="font-size: 14px; color: var(--text-muted); line-height: 1.6;">
+            For patients requiring transplantation support, our intelligent matching engine evaluates donor pools. Matching accounts for ABO/Rh blood compatibility, immunological parity, geographic transit distance (minimizing cold ischemia injury), and clinical urgency level (Critical ICU, High, Standard).
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- CTA to try the demo -->
+    <div style="text-align: center;">
+      <a href="{{ url_for('demo_dashboard') }}" class="btn btn-primary btn-lg">
+        Try the Interactive Demo Simulator
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+      </a>
+    </div>
+  </div>
+</section>
+{% endblock %}

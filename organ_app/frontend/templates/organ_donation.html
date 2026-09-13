@@ -1,0 +1,228 @@
+{% extends 'base.html' %}
+
+{% block title %}Organ Donation & Smart Matching System | MultiOrganAI{% endblock %}
+
+{% block content %}
+<section class="section" style="background: radial-gradient(circle at 80% 20%, rgba(16, 185, 129, 0.08) 0%, transparent 60%);">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-tag">Beyond Detection, Saving Lives</span>
+      <h1 class="section-title">Organ Donation &amp; Smart AI Matching</h1>
+      <p class="section-desc">
+        Bridging the critical gap between voluntary organ donors and waiting recipients through verified ABO/Rh compatibility, physiological age parity, and priority queue scoring.
+      </p>
+    </div>
+
+    <!-- Registration Forms Grid -->
+    <div class="donation-grid-layout">
+      <!-- 1. Donor Pledge Form -->
+      <div class="promo-card" style="border-top: 4px solid var(--primary);">
+        <div class="promo-header">
+          <span class="promo-tag">Pledge Life</span>
+          <h3 class="promo-title">Register as an Organ Donor</h3>
+          <p style="font-size: 13.5px; color: var(--text-muted); margin-top: 6px;">
+            Join the national verified donor directory. Your pledge can save up to 8 lives.
+          </p>
+        </div>
+
+        <form id="donorRegistrationForm">
+          <div class="form-group" style="margin-bottom: 14px;">
+            <label for="donor_name">Full Legal Name</label>
+            <input type="text" id="donor_name" name="donor_name" class="form-input" placeholder="e.g. Eleanor Vance" required>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px;">
+            <div class="form-group">
+              <label for="donor_age">Age</label>
+              <input type="number" id="donor_age" name="age" class="form-input" min="18" max="75" placeholder="e.g. 28" required>
+            </div>
+            <div class="form-group">
+              <label for="donor_gender">Gender</label>
+              <select id="donor_gender" name="gender" class="form-select" required>
+                <option value="Female">Female</option>
+                <option value="Male">Male</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px;">
+            <div class="form-group">
+              <label for="donor_blood">Blood Group (ABO/Rh)</label>
+              <select id="donor_blood" name="blood_group" class="form-select" required>
+                <option value="O+">O Positive (O+)</option>
+                <option value="O-">O Negative (O- Universal)</option>
+                <option value="A+">A Positive (A+)</option>
+                <option value="A-">A Negative (A-)</option>
+                <option value="B+">B Positive (B+)</option>
+                <option value="B-">B Negative (B-)</option>
+                <option value="AB+">AB Positive (AB+)</option>
+                <option value="AB-">AB Negative (AB-)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="organ_offered">Pledged Organ</label>
+              <select id="organ_offered" name="organ_offered" class="form-select" required>
+                <option value="Kidney">Kidney (Living / Deceased)</option>
+                <option value="Liver">Liver (Partial Living / Deceased)</option>
+              </select>
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 20px;">
+            <div class="form-group">
+              <label for="donor_city">Hospital City</label>
+              <input type="text" id="donor_city" name="hospital_city" class="form-input" placeholder="e.g. Boston" required>
+            </div>
+            <div class="form-group">
+              <label for="donor_phone">Emergency Contact Phone</label>
+              <input type="tel" id="donor_phone" name="contact_phone" class="form-input" placeholder="+1-555-0199" required>
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-primary" style="width: 100%;">
+            Submit Official Donor Pledge
+          </button>
+        </form>
+      </div>
+
+      <!-- 2. Recipient Request Form -->
+      <div class="promo-card" style="border-top: 4px solid var(--accent-rose);">
+        <div class="promo-header">
+          <span class="promo-tag" style="color: var(--accent-rose);">Waiting List Request</span>
+          <h3 class="promo-title">Submit Urgent Organ Request</h3>
+          <p style="font-size: 13.5px; color: var(--text-muted); margin-top: 6px;">
+            Enlist patient onto the high-priority allocation queue for real-time algorithmic matching.
+          </p>
+        </div>
+
+        <form id="recipientRegistrationForm">
+          <div class="form-group" style="margin-bottom: 14px;">
+            <label for="recip_name">Patient Full Name</label>
+            <input type="text" id="recip_name" name="recipient_name" class="form-input" placeholder="e.g. Thomas Sterling" required>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px;">
+            <div class="form-group">
+              <label for="recip_age">Age</label>
+              <input type="number" id="recip_age" name="age" class="form-input" min="1" max="90" placeholder="e.g. 52" required>
+            </div>
+            <div class="form-group">
+              <label for="recip_gender">Gender</label>
+              <select id="recip_gender" name="gender" class="form-select" required>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px;">
+            <div class="form-group">
+              <label for="recip_blood">Blood Group</label>
+              <select id="recip_blood" name="blood_group" class="form-select" required>
+                <option value="O+">O Positive (O+)</option>
+                <option value="O-">O Negative (O-)</option>
+                <option value="A+">A Positive (A+)</option>
+                <option value="A-">A Negative (A-)</option>
+                <option value="B+">B Positive (B+)</option>
+                <option value="B-">B Negative (B-)</option>
+                <option value="AB+">AB Positive (AB+)</option>
+                <option value="AB-">AB Negative (AB-)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="organ_needed">Organ Required</label>
+              <select id="organ_needed" name="organ_needed" class="form-select" required>
+                <option value="Kidney">Kidney</option>
+                <option value="Liver">Liver</option>
+              </select>
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px;">
+            <div class="form-group">
+              <label for="urgency_level">Clinical Urgency Tier</label>
+              <select id="urgency_level" name="urgency_level" class="form-select" required>
+                <option value="Critical">Critical (Emergency ICU Tier 1)</option>
+                <option value="High">High (Decompensating Tier 2)</option>
+                <option value="Standard">Standard (Stable Waitlist Tier 3)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="recip_hospital">Hospital Center</label>
+              <input type="text" id="recip_hospital" name="hospital_name" class="form-input" placeholder="e.g. Johns Hopkins" required>
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 20px;">
+            <div class="form-group">
+              <label for="recip_city">City</label>
+              <input type="text" id="recip_city" name="hospital_city" class="form-input" placeholder="e.g. Baltimore" required>
+            </div>
+            <div class="form-group">
+              <label for="recip_phone">Attending Physician Phone</label>
+              <input type="tel" id="recip_phone" name="contact_phone" class="form-input" placeholder="+1-555-0822" required>
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-primary" style="width: 100%; background: #dc2626;">
+            Submit Urgent Allocation Request
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- AI MATCHMAKING RESULTS SECTION -->
+    <div style="margin-top: 48px;">
+      <div class="section-header">
+        <span class="section-tag">Algorithmic Compatibility Engine</span>
+        <h2 class="section-title">Live High-Priority Compatibility Matches</h2>
+        <p class="section-desc">
+          Automated immunological cross-match scoring evaluating blood grouping, geographic transit times, and clinical urgency tiering.
+        </p>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); gap: 24px;">
+        {% for match in top_matches %}
+          <div class="match-card">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <span class="badge badge-normal" style="font-size: 13px;">{{ match.organ }} Transplant Match</span>
+              <div class="match-score-badge">
+                {{ match.score }}%
+                <span style="font-size: 11px; font-weight: 500;">Match Index</span>
+              </div>
+            </div>
+
+            <div style="background: var(--bg-surface-subtle); padding: 14px; border-radius: var(--radius-md); display: grid; grid-template-columns: 1fr 1fr; gap: 12px; font-size: 13px;">
+              <div>
+                <strong style="display: block; color: var(--primary);">Donor:</strong>
+                {{ match.donor.donor_name }} ({{ match.donor.age }}y)<br>
+                Blood: <strong>{{ match.donor.blood_group }}</strong> &bull; {{ match.donor.hospital_city }}
+              </div>
+              <div>
+                <strong style="display: block; color: var(--accent-rose);">Recipient:</strong>
+                {{ match.recipient.recipient_name }} ({{ match.recipient.age }}y)<br>
+                Blood: <strong>{{ match.recipient.blood_group }}</strong> &bull; {{ match.recipient.hospital_city }}
+              </div>
+            </div>
+
+            <div>
+              <strong style="font-size: 12px; color: var(--text-subtle); text-transform: uppercase;">Compatibility Rationale:</strong>
+              <ul style="font-size: 12.5px; color: var(--text-muted); list-style: none; margin-top: 6px;">
+                {% for reason in match.reasons %}
+                  <li style="margin-bottom: 3px;">✓ {{ reason }}</li>
+                {% endfor %}
+              </ul>
+            </div>
+          </div>
+        {% else %}
+          <div style="grid-column: 1 / -1; text-align: center; padding: 40px; background: var(--bg-surface); border-radius: var(--radius-lg); border: 1px dashed var(--border-color);">
+            <p style="color: var(--text-muted);">No active matches above threshold. Register a donor or recipient above to compute live compatibility.</p>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

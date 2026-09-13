@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block title %}Login | MultiOrganAI{% endblock %}
+
+{% block content %}
+<section class="section" style="min-height: 75vh; display: flex; align-items: center;">
+  <div class="container" style="max-width: 480px;">
+    <div class="promo-card" style="box-shadow: var(--shadow-xl); padding: 40px;">
+      <div style="text-align: center; margin-bottom: 28px;">
+        <img src="{{ url_for('static', filename='img/logo.svg') }}" alt="MultiOrganAI" style="height: 48px; margin-bottom: 12px;">
+        <h2 style="font-size: 26px; font-weight: 800;">Welcome Back</h2>
+        <p style="font-size: 14px; color: var(--text-muted);">Access your multi-organ diagnostics and patient dashboard</p>
+      </div>
+
+      <form method="POST" action="{{ url_for('login', next=request.args.get('next')) }}">
+        <div class="form-group" style="margin-bottom: 16px;">
+          <label for="identifier">Email or Username</label>
+          <input type="text" id="identifier" name="identifier" class="form-input" placeholder="Enter username or email" required>
+        </div>
+
+        <div class="form-group" style="margin-bottom: 20px;">
+          <label for="password">Password</label>
+          <input type="password" id="password" name="password" class="form-input" placeholder="••••••••" required>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-lg" style="width: 100%; margin-bottom: 20px;">
+          Log In
+        </button>
+
+        <div style="text-align: center; font-size: 13.5px; color: var(--text-muted);">
+          Don't have an account? <a href="{{ url_for('signup') }}" style="color: var(--primary); font-weight: 600;">Sign up here</a>
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
+{% endblock %}

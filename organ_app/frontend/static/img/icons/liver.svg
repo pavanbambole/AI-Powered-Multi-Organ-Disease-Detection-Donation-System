@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none">
+  <defs>
+    <linearGradient id="liverBrown" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f59e0b" />
+      <stop offset="40%" stop-color="#d97706" />
+      <stop offset="85%" stop-color="#b45309" />
+      <stop offset="100%" stop-color="#78350f" />
+    </linearGradient>
+    <filter id="glowLiver" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="4" stdDeviation="5" flood-color="#d97706" flood-opacity="0.35"/>
+    </filter>
+  </defs>
+  <!-- Right Lobe and Left Lobe contour -->
+  <path d="M22 46 C24 32, 42 24, 65 24 C82 24, 88 32, 88 44 C88 56, 78 72, 60 76 C46 80, 24 74, 18 62 C15 56, 19 50, 22 46 Z" fill="url(#liverBrown)" filter="url(#glowLiver)"/>
+  <!-- Gallbladder -->
+  <path d="M48 68 C45 74, 48 84, 54 84 C60 84, 62 76, 58 68 Z" fill="#10b981" opacity="0.9"/>
+  <!-- Hepatic Portal Vein & Biliary Ducts -->
+  <path d="M52 60 L52 50" stroke="#3b82f6" stroke-width="4" stroke-linecap="round"/>
+  <path d="M56 60 L56 50" stroke="#ef4444" stroke-width="3.5" stroke-linecap="round"/>
+  <!-- Falciform Ligament division line -->
+  <path d="M54 26 C52 38, 50 50, 48 64" stroke="#fcd34d" stroke-width="2" stroke-linecap="round" opacity="0.6"/>
+</svg>

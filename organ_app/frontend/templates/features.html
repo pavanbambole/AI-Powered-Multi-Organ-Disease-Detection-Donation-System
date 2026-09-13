@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+
+{% block title %}System Features | MultiOrganAI{% endblock %}
+
+{% block content %}
+<section class="section">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-tag">Platform Capabilities</span>
+      <h1 class="section-title">Comprehensive Multi-Organ Intelligence</h1>
+      <p class="section-desc">
+        Engineered for clinical precision, patient safety, and seamless hospital integration.
+      </p>
+    </div>
+
+    <div class="organ-cards-grid" style="margin-bottom: 48px;">
+      <div class="organ-card">
+        <div class="organ-card-img-wrap">
+          <img src="{{ url_for('static', filename='img/realistic_kidney.jpg') }}" alt="Renal Anatomy" class="organ-card-img">
+          <span class="organ-card-badge">Renal Engine</span>
+        </div>
+        <div class="organ-card-body">
+          <h3 class="organ-card-title">Kidney Disease Diagnostic Engine</h3>
+          <p class="organ-card-text">
+            Evaluates glomerular filtration function, proteinuria grading, serum creatinine dynamics, and blood urea nitrogen. Accurately flags early stages of chronic kidney disease (CKD) before irreversible functional decline.
+          </p>
+          <div style="font-size: 12.5px; color: var(--text-muted); margin-top: auto;">
+            <strong>Key Markers:</strong> Serum Creatinine, Blood Urea, Urine Albumin, Hemoglobin, Specific Gravity.
+          </div>
+        </div>
+      </div>
+
+      <div class="organ-card">
+        <div class="organ-card-img-wrap">
+          <img src="{{ url_for('static', filename='img/realistic_liver.jpg') }}" alt="Hepatic Anatomy" class="organ-card-img">
+          <span class="organ-card-badge">Hepatic Engine</span>
+        </div>
+        <div class="organ-card-body">
+          <h3 class="organ-card-title">Hepatic Pathology &amp; LFT Analyzer</h3>
+          <p class="organ-card-text">
+            Classifies hepatocellular damage vs. cholestatic biliary patterns. Evaluates transaminases (ALT, AST), alkaline phosphatase, and albumin synthesis margins to detect early fatty liver, hepatitis, or cirrhosis.
+          </p>
+          <div style="font-size: 12.5px; color: var(--text-muted); margin-top: auto;">
+            <strong>Key Markers:</strong> Total &amp; Direct Bilirubin, ALT (SGPT), AST (SGOT), Alkaline Phosphatase, A/G Ratio.
+          </div>
+        </div>
+      </div>
+
+      <div class="organ-card">
+        <div class="organ-card-img-wrap">
+          <img src="{{ url_for('static', filename='img/realistic_heart.jpg') }}" alt="Cardiovascular Anatomy" class="organ-card-img">
+          <span class="organ-card-badge">Cardiovascular Health</span>
+        </div>
+        <div class="organ-card-body">
+          <h3 class="organ-card-title">Cardiovascular Risk Assessment</h3>
+          <p class="organ-card-text">
+            Integrates systemic vascular indicators, blood pressure dynamics, resting hemodynamics, and lipid balance to quantify global cardiovascular risk and inform timely clinical intervention.
+          </p>
+          <div style="font-size: 12.5px; color: var(--text-muted); margin-top: auto;">
+            <strong>Key Markers:</strong> Systolic / Diastolic BP, Heart Rate, Vascular Risk Index, Lipid Ratios.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Additional System Features -->
+    <div class="two-column-promo">
+      <div class="promo-card">
+        <h3 style="font-size: 20px; margin-bottom: 12px;">📑 Automated Clinical PDF Reports</h3>
+        <p style="font-size: 14px; color: var(--text-muted); line-height: 1.6; margin-bottom: 12px;">
+          Generate physician-ready PDF reports formatted to international laboratory documentation standards. Includes unique report ID, risk gauges, reference range comparisons, and tailored clinical guidance.
+        </p>
+        <a href="{{ url_for('generate_sample_pdf') }}" id="generateSamplePdfBtn" target="_blank" rel="noopener noreferrer" class="btn btn-outline" style="font-size: 13px;" onclick="handleGenerateSamplePdf(event, this)">Generate Sample PDF</a>
+      </div>
+
+      <div class="promo-card">
+        <h3 style="font-size: 20px; margin-bottom: 12px;">🧬 Intelligent Organ Allocation Queue</h3>
+        <p style="font-size: 14px; color: var(--text-muted); line-height: 1.6; margin-bottom: 12px;">
+          Matching algorithm designed to eliminate manual delays. Cross-references ABO blood group compatibility, age discrepancy indices, emergency urgency priority, and regional hospital proximity.
+        </p>
+        <a href="{{ url_for('organ_matching') }}" class="btn btn-outline" style="font-size: 13px;">Explore Organ Matching</a>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

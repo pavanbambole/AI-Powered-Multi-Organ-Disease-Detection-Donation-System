@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Organ Matching - MultiOrganAI Health Intelligence</title>
+<link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='img/icons/kidney.svg') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
+  body { background: #f8fafc; color: #1e293b; min-height: 100vh; }
+  .layout { display: grid; grid-template-columns: 245px 1fr; min-height: 100vh; }
+  .sidebar { background: #0f2e1b; color: #fff; padding: 26px 18px; display: flex; flex-direction: column; border-right: 1px solid #1e4a2d; }
+  .sidebar .brand { display: flex; align-items: center; gap: 10px; margin-bottom: 28px; text-decoration: none; color: #fff; }
+  .sidebar .brand-icon { width: 36px; height: 36px; border-radius: 8px; background: #166534; display:flex; align-items:center; justify-content:center; font-weight:bold; font-size: 15px; border: 1px solid #22c55e; }
+  .sidebar .brand h2 { font-size: 14.5px; line-height: 1.25; }
+  .sidebar .brand h2 span { color: #4ade80; display:block; font-size: 12.5px; font-weight: 500; }
+  .nav { display: flex; flex-direction: column; gap: 4px; }
+  .nav a { display: flex; align-items: center; gap: 10px; color: #cbd5e1; text-decoration: none; font-size: 13.5px; padding: 10px 12px; border-radius: 8px; transition: all 0.2s ease; }
+  .nav a.active, .nav a:hover { background: #194a2b; color: #fff; }
+  .sidebar-note { margin-top: auto; background: #143d24; border: 1px solid #1e5933; padding: 12px; border-radius: 8px; font-size: 11.5px; color: #cbd5e1; line-height: 1.45; }
+  .main-content { padding: 28px 36px; width: 100%; }
+  @media (max-width: 1024px) { .layout { grid-template-columns: 1fr; } .sidebar { display: none; } }
+</style>
+</head>
+<body>
+<div class="layout">
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <a href="{{ url_for('index') }}" class="brand">
+      <div class="brand-icon">AI</div>
+      <h2>Multi Organ<span>Disease Detection</span></h2>
+    </a>
+    <nav class="nav">
+      <a href="{{ url_for('dashboard') }}">🏠 Dashboard</a>
+      <a href="{{ url_for('dashboard') }}#predict">➕ New Prediction</a>
+      <a href="{{ url_for('my_reports') }}">📑 My Reports</a>
+      <a href="{{ url_for('organ_matching') }}" class="active">🧬 Organ Matching</a>
+      <a href="{{ url_for('logout') }}">🚪 Logout</a>
+    </nav>
+    <div class="sidebar-note">🔒 All organ matching results use verified clinical data and AI-assisted compatibility scoring.</div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main-content">
+
+<div class="organ-matching-dashboard">
+{% macro render_status_badge(status) %}
+  {% if status == 'Compatible' %}
+    <span class="status-badge badge-compatible">✓ Compatible</span>
+  {% elif status == 'Partial/Review' %}
+    <span class="status-badge badge-review">⚠ Partial/Review</span>
+  {% else %}
+    <span class="status-badge badge-incompatible">✕ Not Compatible</span>
+  {% endif %}
+{% endmacro %}
+  <!-- 1. PAGE HEADER -->
+  <div class="matching-page-header">
+    <div class="container">
+      <div class="header-inner">
+        <div class="header-badge">Clinical Decision Support</div>
+        <h1 class="header-title">Intelligent Organ Allocation &amp; Matching</h1>
+        <p class="header-description">
+          AI-assisted compatibility analysis to identify the most suitable organ match based on medical and allocation parameters.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <div class="container matching-container">
+    <!-- Top Recipient Selector (if registered recipients exist in DB) -->
+    {% if recipients and recipients|length > 0 %}
+    <div class="clinical-selector-bar">
+      <label for="existingRecipientSelect" class="selector-label">Load Registered Patient:</label>
+      <select id="existingRecipientSelect" class="form-control selector-control" onchange="loadExistingRecipient(this.value)">
+        <option value="">-- Select from Registered Patients in Database --</option>
+        {% for r in recipients %}
+        <option value="{{ r.id }}" data-json='{{ r|tojson }}'>
+          #REC-{{ r.id }} | {{ r.patient_name }} ({{ r.required_organ or r.organ_needed }}, Blood: {{ r.blood_group }}, Urgency: {{ r.urgency or r.urgency_level }})
+        </option>
+        {% endfor %}
+      </select>
+    </div>
+    {% endif %}
+
+    <!-- Top 2-Column: Patient Details Intake (Left) & Prominent Best Match (Right) -->
+    <div class="matching-primary-grid">
+      <!-- 2. MATCHING INPUT / PATIENT DETAILS -->
+      <div class="clinical-card patient-input-card">
+        <div class="clinical-card-header">
+          <div class="card-title-group">
+            <span class="card-num">01</span>
+            <div>
+              <h2 class="clinical-card-title">Matching Input &amp; Patient Details</h2>
+              <p class="clinical-card-subtitle">Recipient clinical parameters for registry matching</p>
+            </div>
+          </div>
+        </div>
+
+        <form id="organMatchingForm" class="patient-form" onsubmit="runCompatibilityAnalysis(event)">
+          <div class="form-row-2">
+            <div class="form-group">
+              <label for="patient_id" class="form-label">Patient ID *</label>
+              <input type="text" id="patient_id" name="patient_id" class="form-control" required value="{{ initial_match.recipient.patient_id }}">
+            </div>
+            <div class="form-group">
+              <label for="patient_name" class="form-label">Patient Full Name *</label>
+              <input type="text" id="patient_name" name="patient_name" class="form-control" required value="{{ initial_match.recipient.name }}">
+            </div>
+          </div>
+
+          <div class="form-row-2">
+            <div class="form-group">
+              <label for="required_organ" class="form-label">Required Organ *</label>
+              <select id="required_organ" name="required_organ" class="form-control" required>
+                <option value="Kidney" {% if initial_match.recipient.organ == 'Kidney' %}selected{% endif %}>Kidney</option>
+                <option value="Liver" {% if initial_match.recipient.organ == 'Liver' %}selected{% endif %}>Liver</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="age" class="form-label">Patient Age (Years) *</label>
+              <input type="number" id="age" name="age" class="form-control" min="1" max="100" required value="{{ initial_match.recipient.age }}">
+            </div>
+          </div>
+
+          <div class="form-row-2">
+            <div class="form-group">
+              <label for="blood_group" class="form-label">Blood Group (ABO) *</label>
+              <select id="blood_group" name="blood_group" class="form-control" required>
+                <option value="A" {% if initial_match.recipient.abo_group == 'A' %}selected{% endif %}>A</option>
+                <option value="B" {% if initial_match.recipient.abo_group == 'B' %}selected{% endif %}>B</option>
+                <option value="AB" {% if initial_match.recipient.abo_group == 'AB' %}selected{% endif %}>AB (Universal Recipient)</option>
+                <option value="O" {% if initial_match.recipient.abo_group == 'O' %}selected{% endif %}>O</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="rh_factor" class="form-label">Rh Factor *</label>
+              <select id="rh_factor" name="rh_factor" class="form-control" required>
+                <option value="+" {% if initial_match.recipient.rh_factor == '+' %}selected{% endif %}>Positive (+)</option>
+                <option value="-" {% if initial_match.recipient.rh_factor == '-' %}selected{% endif %}>Negative (-)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-row-2">
+            <div class="form-group">
+              <label for="urgency_level" class="form-label">Medical Urgency *</label>
+              <select id="urgency_level" name="urgency_level" class="form-control" required>
+                <option value="Critical (Tier 1)" {% if 'Tier 1' in initial_match.recipient.urgency_level %}selected{% endif %}>Tier 1 - Critical (Emergency ICU)</option>
+                <option value="High (Tier 2)" {% if 'Tier 2' in initial_match.recipient.urgency_level %}selected{% endif %}>Tier 2 - High (Rapid Progression)</option>
+                <option value="Standard (Tier 3)" {% if 'Tier 3' in initial_match.recipient.urgency_level %}selected{% endif %}>Tier 3 - Standard (Stable Monitoring)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="waiting_days" class="form-label">Waiting List Priority (Days) *</label>
+              <input type="number" id="waiting_days" name="waiting_days" class="form-control" min="0" max="3650" required value="{{ initial_match.recipient.waiting_days }}">
+            </div>
+          </div>
+
+          <div class="form-row-2">
+            <div class="form-group">
+              <label for="hospital_city" class="form-label">Hospital Location / City*</label>
+              <select id="hospital_city" name="hospital_city" class="form-control" required>
+                <option value="" disabled {% if not initial_match.recipient.hospital_city or initial_match.recipient.hospital_city not in ['Nagpur, Maharashtra', 'Mumbai, Maharashtra', 'Pune, Maharashtra', 'Nashik, Maharashtra', 'New Delhi, Delhi', 'Bengaluru, Karnataka', 'Hyderabad, Telangana', 'Chennai, Tamil Nadu', 'Kolkata, West Bengal', 'Ahmedabad, Gujarat', 'Jaipur, Rajasthan', 'Lucknow, Uttar Pradesh', 'Bhopal, Madhya Pradesh', 'Indore, Madhya Pradesh', 'Raipur, Chhattisgarh'] %}selected{% endif %}>Select Hospital City</option>
+                <option value="Nagpur, Maharashtra" {% if initial_match.recipient.hospital_city == 'Nagpur, Maharashtra' %}selected{% endif %}>Nagpur, Maharashtra</option>
+                <option value="Mumbai, Maharashtra" {% if initial_match.recipient.hospital_city == 'Mumbai, Maharashtra' %}selected{% endif %}>Mumbai, Maharashtra</option>
+                <option value="Pune, Maharashtra" {% if initial_match.recipient.hospital_city == 'Pune, Maharashtra' %}selected{% endif %}>Pune, Maharashtra</option>
+                <option value="Nashik, Maharashtra" {% if initial_match.recipient.hospital_city == 'Nashik, Maharashtra' %}selected{% endif %}>Nashik, Maharashtra</option>
+                <option value="New Delhi, Delhi" {% if initial_match.recipient.hospital_city == 'New Delhi, Delhi' %}selected{% endif %}>New Delhi, Delhi</option>
+                <option value="Bengaluru, Karnataka" {% if initial_match.recipient.hospital_city == 'Bengaluru, Karnataka' %}selected{% endif %}>Bengaluru, Karnataka</option>
+                <option value="Hyderabad, Telangana" {% if initial_match.recipient.hospital_city == 'Hyderabad, Telangana' %}selected{% endif %}>Hyderabad, Telangana</option>
+                <option value="Chennai, Tamil Nadu" {% if initial_match.recipient.hospital_city == 'Chennai, Tamil Nadu' %}selected{% endif %}>Chennai, Tamil Nadu</option>
+                <option value="Kolkata, West Bengal" {% if initial_match.recipient.hospital_city == 'Kolkata, West Bengal' %}selected{% endif %}>Kolkata, West Bengal</option>
+                <option value="Ahmedabad, Gujarat" {% if initial_match.recipient.hospital_city == 'Ahmedabad, Gujarat' %}selected{% endif %}>Ahmedabad, Gujarat</option>
+                <option value="Jaipur, Rajasthan" {% if initial_match.recipient.hospital_city == 'Jaipur, Rajasthan' %}selected{% endif %}>Jaipur, Rajasthan</option>
+                <option value="Lucknow, Uttar Pradesh" {% if initial_match.recipient.hospital_city == 'Lucknow, Uttar Pradesh' %}selected{% endif %}>Lucknow, Uttar Pradesh</option>
+                <option value="Bhopal, Madhya Pradesh" {% if initial_match.recipient.hospital_city == 'Bhopal, Madhya Pradesh' %}selected{% endif %}>Bhopal, Madhya Pradesh</option>
+                <option value="Indore, Madhya Pradesh" {% if initial_match.recipient.hospital_city == 'Indore, Madhya Pradesh' %}selected{% endif %}>Indore, Madhya Pradesh</option>
+                <option value="Raipur, Chhattisgarh" {% if initial_match.recipient.hospital_city == 'Raipur, Chhattisgarh' %}selected{% endif %}>Raipur, Chhattisgarh</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="crossmatch_status" class="form-label">Physiological Crossmatch *</label>
+              <select id="crossmatch_status" name="crossmatch_status" class="form-control" required>
+                <option value="Negative (Clear)" selected>Negative (Clear - Low PRA)</option>
+                <option value="Conditional (<20% PRA)">Conditional (&lt;20% PRA)</option>
+                <option value="Positive / Barrier">Positive (Antibody Barrier)</option>
+              </select>
+            </div>
+          </div>
+
+          <button type="submit" id="runAnalysisBtn" class="btn btn-primary btn-submit-match">
+            <span id="btnText">Evaluate Compatibility Analysis</span>
+            <span id="btnSpinner" class="spinner" style="display: none;"></span>
+          </button>
+        </form>
+      </div>
+
+      <!-- 4. MATCH RESULT (PROMINENT RESULT CARD) -->
+      <div class="clinical-card match-result-card">
+        <div class="clinical-card-header">
+          <div class="card-title-group">
+            <span class="card-num">02</span>
+            <div>
+              <h2 class="clinical-card-title">Match Result</h2>
+              <p class="clinical-card-subtitle">Algorithmic allocation outcome</p>
+            </div>
+          </div>
+          <span class="badge-status-top">BEST MATCH</span>
+        </div>
+
+        <div class="result-score-panel">
+          <div class="score-display-box">
+            <div class="score-label">MATCH SCORE</div>
+            <div class="score-number-large" id="displayScore">
+              {{ initial_match.compatibility_score }}<span class="score-unit">%</span>
+            </div>
+            <div class="score-calc-note">Calculated dynamically from medical parameters</div>
+          </div>
+
+          <div class="accuracy-display-box">
+            <div class="accuracy-label">MATCHING ACCURACY</div>
+            <div class="accuracy-number" id="displayAccuracy">
+              {{ initial_match.matching_accuracy }}%
+            </div>
+            <div class="accuracy-status">Algorithmic Confidence</div>
+          </div>
+        </div>
+
+        <div class="recommendation-panel">
+          <div class="rec-caption">RECOMMENDATION:</div>
+          <div class="rec-badge" id="displayRecommendation">
+            {{ initial_match.recommendation }}
+          </div>
+        </div>
+
+        <!-- Matched Candidate Summary Bar -->
+        <div class="matched-candidate-summary">
+          <div class="summary-item">
+            <span class="summary-lbl">Candidate ID:</span>
+            <strong class="summary-val" id="summaryDonorId">#{{ initial_match.best_match.donor_id }}</strong>
+          </div>
+          <div class="summary-item">
+            <span class="summary-lbl">Donor Profile:</span>
+            <strong class="summary-val" id="summaryDonorMeta">{{ initial_match.best_match.age }} yrs / {{ initial_match.best_match.gender }}</strong>
+          </div>
+          <div class="summary-item">
+            <span class="summary-lbl">Blood Group:</span>
+            <strong class="summary-val blood-tag" id="summaryDonorBlood">{{ initial_match.best_match.blood_group }}</strong>
+          </div>
+          <div class="summary-item">
+            <span class="summary-lbl">Location:</span>
+            <strong class="summary-val" id="summaryDonorCity">{{ initial_match.best_match.hospital_city }}</strong>
+          </div>
+        </div>
+
+        <div class="match-actions-row">
+          <button type="button" class="btn btn-outline" onclick="openMatchDetailsModal()">
+            View Match Details
+          </button>
+          <button type="button" class="btn btn-secondary" onclick="window.print()">
+            Print Clinical Summary
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Middle 2-Column: 3. Compatibility Analysis (Left) & 5. Matching Breakdown (Right) -->
+    <div class="matching-secondary-grid">
+      <!-- 3. COMPATIBILITY ANALYSIS -->
+      <div class="clinical-card">
+        <div class="clinical-card-header">
+          <div class="card-title-group">
+            <span class="card-num">03</span>
+            <div>
+              <h2 class="clinical-card-title">Compatibility Analysis</h2>
+              <p class="clinical-card-subtitle">Systematic parameter verification matrix</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="compatibility-table-wrapper">
+          <table class="clinical-table">
+            <thead>
+              <tr>
+                <th>Matching Parameter</th>
+                <th>Clinical Verification</th>
+                <th style="text-align: right;">Status</th>
+              </tr>
+            </thead>
+            <tbody id="compatibilityTableBody">
+              <!-- Blood Group Compatibility -->
+              <tr>
+                <td><strong>Blood Group Compatibility</strong></td>
+                <td id="paramBloodDesc">Donor {{ initial_match.best_match.blood_group }} ➔ Recipient {{ initial_match.recipient.blood_group }}</td>
+                <td style="text-align: right;" id="paramBloodBadge">
+                  {{ render_status_badge(initial_match.compatibility_params.blood_group) }}
+                </td>
+              </tr>
+              <!-- ABO Compatibility -->
+              <tr>
+                <td><strong>ABO Compatibility</strong></td>
+                <td id="paramAboDesc">Antibody barrier assessment verified</td>
+                <td style="text-align: right;" id="paramAboBadge">
+                  {{ render_status_badge(initial_match.compatibility_params.abo_group) }}
+                </td>
+              </tr>
+              <!-- Rh Compatibility -->
+              <tr>
+                <td><strong>Rh Compatibility</strong></td>
+                <td id="paramRhDesc">Rhesus factor cross-tolerance validated</td>
+                <td style="text-align: right;" id="paramRhBadge">
+                  {{ render_status_badge(initial_match.compatibility_params.rh_factor) }}
+                </td>
+              </tr>
+              <!-- Age Compatibility -->
+              <tr>
+                <td><strong>Age Compatibility</strong></td>
+                <td id="paramAgeDesc">Donor {{ initial_match.best_match.age }} yrs vs Recipient {{ initial_match.recipient.age }} yrs</td>
+                <td style="text-align: right;" id="paramAgeBadge">
+                  {{ render_status_badge(initial_match.compatibility_params.age) }}
+                </td>
+              </tr>
+              <!-- Medical Urgency -->
+              <tr>
+                <td><strong>Medical Urgency</strong></td>
+                <td id="paramUrgencyDesc">{{ initial_match.recipient.urgency_level }} allocation queue</td>
+                <td style="text-align: right;" id="paramUrgencyBadge">
+                  {{ render_status_badge(initial_match.compatibility_params.medical_urgency) }}
+                </td>
+              </tr>
+              <!-- Priority -->
+              <tr>
+                <td><strong>Priority</strong></td>
+                <td id="paramPriorityDesc">Waitlist time ({{ initial_match.recipient.waiting_days }} days) verified</td>
+                <td style="text-align: right;" id="paramPriorityBadge">
+                  {{ render_status_badge(initial_match.compatibility_params.priority) }}
+                </td>
+              </tr>
+              <!-- Physiological/Tissue Compatibility -->
+              <tr>
+                <td><strong>Physiological/Tissue Compatibility</strong></td>
+                <td id="paramTissueDesc">Crossmatch: {{ initial_match.recipient.crossmatch_status }}</td>
+                <td style="text-align: right;" id="paramTissueBadge">
+                  {{ render_status_badge(initial_match.compatibility_params.physiological_tissue) }}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- 5. MATCHING BREAKDOWN -->
+      <div class="clinical-card">
+        <div class="clinical-card-header">
+          <div class="card-title-group">
+            <span class="card-num">04</span>
+            <div>
+              <h2 class="clinical-card-title">Matching Breakdown</h2>
+              <p class="clinical-card-subtitle">Itemized scoring weights from existing backend algorithm</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="breakdown-table-wrapper">
+          <table class="clinical-table breakdown-table">
+            <thead>
+              <tr>
+                <th>Factor</th>
+                <th style="text-align: center;">Weight</th>
+                <th style="text-align: right;">Points Awarded</th>
+              </tr>
+            </thead>
+            <tbody id="breakdownTableBody">
+              {% for item in initial_match.breakdown %}
+              <tr>
+                <td>{{ item.factor }}</td>
+                <td style="text-align: center; color: var(--text-muted);">{{ item.max }} pts</td>
+                <td style="text-align: right;">
+                  <strong class="points-val">{{ "%.1f"|format(item.score) }} / {{ item.max }}</strong>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+            <tfoot>
+              <tr class="breakdown-total-row">
+                <td colspan="2"><strong>Overall Match Score</strong></td>
+                <td style="text-align: right;">
+                  <strong class="total-score-badge" id="breakdownTotalScore">{{ initial_match.compatibility_score }}%</strong>
+                </td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- 6. AI MATCH SUGGESTION / RECOMMENDATION -->
+    <div class="clinical-card match-suggestion-card">
+      <div class="clinical-card-header">
+        <div class="card-title-group">
+          <span class="card-num">05</span>
+          <div>
+            <h2 class="clinical-card-title">AI Match Recommendation</h2>
+            <p class="clinical-card-subtitle">Clinical reasoning, compatibility factors, and suggested protocol</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="suggestion-content-grid">
+        <!-- Rationale & Factors -->
+        <div class="suggestion-column">
+          <h3 class="suggestion-subhead">Why this candidate is recommended:</h3>
+          <p class="suggestion-rationale" id="suggestionRationale">
+            {{ initial_match.match_rationale }}
+          </p>
+
+          <h3 class="suggestion-subhead" style="margin-top: 16px;">Key Compatibility Factors:</h3>
+          <ul class="suggestion-list factors-list" id="suggestionFactorsList">
+            {% for reason in initial_match.best_match.reasons %}
+            <li>✓ {{ reason }}</li>
+            {% endfor %}
+          </ul>
+        </div>
+
+        <!-- Priority, Warnings & Next Steps -->
+        <div class="suggestion-column">
+          <div class="priority-box">
+            <span class="priority-label">Medical Priority:</span>
+            <strong id="suggestionPriority">{{ initial_match.best_match.priority_level }}</strong>
+          </div>
+
+          <div class="warnings-box" id="suggestionWarningsBox" {% if not initial_match.best_match.warnings %}style="display: none;"{% endif %}>
+            <h4 class="warning-title">Clinical Considerations &amp; Warnings:</h4>
+            <ul class="warning-list" id="suggestionWarningsList">
+              {% for w in initial_match.best_match.warnings %}
+              <li>⚠ {{ w }}</li>
+              {% endfor %}
+            </ul>
+          </div>
+
+          <div class="action-box">
+            <h4 class="action-title">Suggested Clinical Protocol:</h4>
+            <ul class="action-list" id="suggestionActionsList">
+              {% for s in initial_match.optimization_suggestions %}
+              <li>➔ {{ s }}</li>
+              {% endfor %}
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 7. ALTERNATIVE MATCHES -->
+    <div class="clinical-card alternative-matches-card">
+      <div class="clinical-card-header">
+        <div class="card-title-group">
+          <span class="card-num">06</span>
+          <div>
+            <h2 class="clinical-card-title">Alternative Matches</h2>
+            <p class="clinical-card-subtitle">Valid candidates in active cohort ranked by suitability</p>
+          </div>
+        </div>
+        <div class="cohort-count-tag">
+          <span id="altCandidatesCount">{{ initial_match.alternative_matches|length }}</span> Alternative Candidates
+        </div>
+      </div>
+
+      <div class="alternative-table-wrapper">
+        <table class="clinical-table alternatives-table">
+          <thead>
+            <tr>
+              <th>Candidate ID</th>
+              <th>Organ</th>
+              <th>Donor Profile</th>
+              <th>Location</th>
+              <th>Priority Level</th>
+              <th>Status</th>
+              <th style="text-align: right;">Compatibility Score</th>
+            </tr>
+          </thead>
+          <tbody id="alternativesTableBody">
+            {% for cand in initial_match.alternative_matches %}
+            <tr>
+              <td><strong>#{{ cand.donor_id }}</strong></td>
+              <td>{{ cand.organ }}</td>
+              <td>{{ cand.donor_name }} ({{ cand.age }} yrs, {{ cand.blood_group }})</td>
+              <td>{{ cand.hospital_city }}</td>
+              <td>{{ cand.priority_level }}</td>
+              <td><span class="status-cleared">✓ {{ cand.status }}</span></td>
+              <td style="text-align: right;">
+                <span class="alt-score-badge">{{ cand.compatibility_score }}%</span>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 8. FULL MATCH DETAILS (MODAL / DOSSIER) -->
+<div id="matchDetailsModal" class="clinical-modal" style="display: none;">
+  <div class="modal-backdrop" onclick="closeMatchDetailsModal()"></div>
+  <div class="modal-dialog">
+    <div class="modal-header">
+      <div class="modal-title-wrap">
+        <h3 class="modal-title">Complete Match Details Dossier</h3>
+        <p class="modal-subtitle">Itemized recipient-donor comparison &amp; allocation breakdown</p>
+      </div>
+      <button type="button" class="modal-close-btn" onclick="closeMatchDetailsModal()">&times;</button>
+    </div>
+
+    <div class="modal-body">
+      <!-- Side-by-side comparison -->
+      <div class="modal-comparison-grid">
+        <div class="comp-card">
+          <div class="comp-card-header">Recipient Patient Details</div>
+          <div class="comp-item"><span>Patient ID:</span><strong id="modalRecipId">{{ initial_match.recipient.patient_id }}</strong></div>
+          <div class="comp-item"><span>Full Name:</span><strong id="modalRecipName">{{ initial_match.recipient.name }}</strong></div>
+          <div class="comp-item"><span>Age &amp; Gender:</span><strong id="modalRecipAgeGender">{{ initial_match.recipient.age }} yrs / {{ initial_match.recipient.gender }}</strong></div>
+          <div class="comp-item"><span>Required Organ:</span><strong id="modalRecipOrgan">{{ initial_match.recipient.organ }}</strong></div>
+          <div class="comp-item"><span>Blood Group:</span><strong class="blood-tag" id="modalRecipBlood">{{ initial_match.recipient.blood_group }}</strong></div>
+          <div class="comp-item"><span>Hospital / City:</span><strong id="modalRecipCity">{{ initial_match.recipient.hospital_city }}</strong></div>
+          <div class="comp-item"><span>Urgency Tier:</span><strong id="modalRecipUrgency">{{ initial_match.recipient.urgency_level }}</strong></div>
+          <div class="comp-item"><span>Waitlist Time:</span><strong id="modalRecipWaiting">{{ initial_match.recipient.waiting_days }} Days</strong></div>
+        </div>
+
+        <div class="comp-card">
+          <div class="comp-card-header">Matched Donor Details</div>
+          <div class="comp-item"><span>Donor ID:</span><strong id="modalDonorId">#{{ initial_match.best_match.donor_id }}</strong></div>
+          <div class="comp-item"><span>Profile / Name:</span><strong id="modalDonorName">{{ initial_match.best_match.donor_name }}</strong></div>
+          <div class="comp-item"><span>Age &amp; Gender:</span><strong id="modalDonorAgeGender">{{ initial_match.best_match.age }} yrs / {{ initial_match.best_match.gender }}</strong></div>
+          <div class="comp-item"><span>Offered Organ:</span><strong id="modalDonorOrgan">{{ initial_match.best_match.organ }}</strong></div>
+          <div class="comp-item"><span>Blood Group:</span><strong class="blood-tag" id="modalDonorBlood">{{ initial_match.best_match.blood_group }}</strong></div>
+          <div class="comp-item"><span>Hospital / City:</span><strong id="modalDonorCity">{{ initial_match.best_match.hospital_city }}</strong></div>
+          <div class="comp-item"><span>Allocation Priority:</span><strong id="modalDonorPriority">{{ initial_match.best_match.priority_level }}</strong></div>
+          <div class="comp-item"><span>Medical Clearance:</span><strong class="status-cleared" id="modalDonorStatus">✓ {{ initial_match.best_match.status }}</strong></div>
+        </div>
+      </div>
+
+      <!-- Itemized Scoring Matrix in Modal -->
+      <div class="modal-scoring-box">
+        <h4 class="modal-subhead">Calculated Allocation Breakdown</h4>
+        <div class="modal-breakdown-list" id="modalBreakdownList">
+          {% for item in initial_match.breakdown %}
+          <div class="modal-breakdown-row">
+            <span>{{ item.factor }} (Max {{ item.max }} pts)</span>
+            <strong>{{ "%.1f"|format(item.score) }} / {{ item.max }} pts</strong>
+          </div>
+          {% endfor %}
+          <div class="modal-breakdown-total">
+            <span>Final Algorithmic Match Score:</span>
+            <strong id="modalOverallScore">{{ initial_match.compatibility_score }}%</strong>
+          </div>
+        </div>
+      </div>
+
+      <!-- Next Clinical Steps -->
+      <div class="modal-protocol-box">
+        <h4 class="modal-subhead">Transplant Protocol Guidelines</h4>
+        <ol class="protocol-ol">
+          <li><strong>Prospective Crossmatching:</strong> Perform serum lymphocytotoxicity crossmatching before surgical organ recovery.</li>
+          <li><strong>Preservation Logistics:</strong> Verify cold ischemic preservation transportation time (Kidney &lt;24h, Liver &lt;12h).</li>
+          <li><strong>Transplant Board Review:</strong> Submit match assessment to institutional clinical transplant committee for final signoff.</li>
+        </ol>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button type="button" class="btn btn-outline" onclick="closeMatchDetailsModal()">Close Details</button>
+      <button type="button" class="btn btn-primary" onclick="window.print()">Print Dossier</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  let currentMatchData = {{ initial_match | tojson }};
+
+  function loadExistingRecipient(recipId) {
+    if (!recipId) return;
+    const select = document.getElementById('existingRecipientSelect');
+    const option = select.options[select.selectedIndex];
+    const dataStr = option.getAttribute('data-json');
+    if (!dataStr) return;
+
+    try {
+      const r = JSON.parse(dataStr);
+      document.getElementById('patient_id').value = 'REC-' + r.id;
+      document.getElementById('patient_name').value = r.patient_name || r.recipient_name || '';
+      document.getElementById('required_organ').value = (r.required_organ || r.organ_needed || 'Kidney').trim();
+      document.getElementById('age').value = r.age || 40;
+
+      // Blood & Rh
+      const bg = (r.blood_group || 'A+').trim();
+      if (bg.includes('+')) {
+        document.getElementById('blood_group').value = bg.replace('+', '').trim();
+        document.getElementById('rh_factor').value = '+';
+      } else if (bg.includes('-')) {
+        document.getElementById('blood_group').value = bg.replace('-', '').trim();
+        document.getElementById('rh_factor').value = '-';
+      } else {
+        document.getElementById('blood_group').value = bg;
+      }
+
+      if (r.hospital_city) {
+        const citySelect = document.getElementById('hospital_city');
+        for (let i = 0; i < citySelect.options.length; i++) {
+          const optVal = citySelect.options[i].value.toLowerCase();
+          const rCity = r.hospital_city.toLowerCase();
+          if (optVal && (optVal === rCity || optVal.includes(rCity) || rCity.includes(optVal))) {
+            citySelect.selectedIndex = i;
+            break;
+          }
+        }
+      }
+
+      const urg = (r.urgency || r.urgency_level || 'High').toLowerCase();
+      if (urg.includes('crit')) document.getElementById('urgency_level').value = 'Critical (Tier 1)';
+      else if (urg.includes('high')) document.getElementById('urgency_level').value = 'High (Tier 2)';
+      else document.getElementById('urgency_level').value = 'Standard (Tier 3)';
+
+      // Trigger matching analysis
+      runCompatibilityAnalysis();
+    } catch (e) {
+      console.error('Error loading recipient data:', e);
+    }
+  }
+
+  async function runCompatibilityAnalysis(e) {
+    if (e) e.preventDefault();
+
+    const btn = document.getElementById('runAnalysisBtn');
+    const btnText = document.getElementById('btnText');
+    const btnSpinner = document.getElementById('btnSpinner');
+
+    btn.disabled = true;
+    btnText.textContent = 'Calculating Compatibility...';
+    btnSpinner.style.display = 'inline-block';
+
+    const payload = {
+      patient_id: document.getElementById('patient_id').value,
+      patient_name: document.getElementById('patient_name').value,
+      required_organ: document.getElementById('required_organ').value,
+      age: parseInt(document.getElementById('age').value, 10) || 38,
+      blood_group: document.getElementById('blood_group').value,
+      rh_factor: document.getElementById('rh_factor').value,
+      urgency_level: document.getElementById('urgency_level').value,
+      waiting_days: parseInt(document.getElementById('waiting_days').value, 10) || 0,
+      hospital_city: document.getElementById('hospital_city').value,
+      crossmatch_status: document.getElementById('crossmatch_status').value
+    };
+
+    try {
+      const response = await fetch('/api/organ-matching/evaluate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      const res = await response.json();
+      if (res.success && res.data) {
+        currentMatchData = res.data;
+        updateUIWithCalculatedMatch(res.data);
+      } else {
+        alert('Evaluation notice: ' + (res.error || 'Failed to calculate match'));
+      }
+    } catch (err) {
+      console.error('Matching request error:', err);
+      alert('Error calculating compatibility with backend engine.');
+    } finally {
+      btn.disabled = false;
+      btnText.textContent = 'Evaluate Compatibility Analysis';
+      btnSpinner.style.display = 'none';
+    }
+  }
+
+  function renderStatusBadgeHtml(status) {
+    if (status === 'Compatible') {
+      return '<span class="status-badge badge-compatible">✓ Compatible</span>';
+    } else if (status === 'Partial/Review') {
+      return '<span class="status-badge badge-review">⚠ Partial/Review</span>';
+    } else {
+      return '<span class="status-badge badge-incompatible">✕ Not Compatible</span>';
+    }
+  }
+
+  function updateUIWithCalculatedMatch(data) {
+    // 4. Match Result Card
+    document.getElementById('displayScore').innerHTML = `${data.compatibility_score}<span class="score-unit">%</span>`;
+    document.getElementById('displayAccuracy').textContent = `${data.matching_accuracy}%`;
+    document.getElementById('displayRecommendation').textContent = data.recommendation;
+
+    if (data.best_match) {
+      document.getElementById('summaryDonorId').textContent = '#' + data.best_match.donor_id;
+      document.getElementById('summaryDonorMeta').textContent = `${data.best_match.age} yrs / ${data.best_match.gender}`;
+      document.getElementById('summaryDonorBlood').textContent = data.best_match.blood_group;
+      document.getElementById('summaryDonorCity').textContent = data.best_match.hospital_city;
+    }
+
+    // 3. Compatibility Analysis Table
+    const cp = data.compatibility_params || {};
+    const dBlood = data.best_match ? data.best_match.blood_group : '-';
+    const rBlood = data.recipient.blood_group;
+    const dAge = data.best_match ? data.best_match.age : '-';
+    const rAge = data.recipient.age;
+
+    document.getElementById('paramBloodDesc').textContent = `Donor ${dBlood} ➔ Recipient ${rBlood}`;
+    document.getElementById('paramBloodBadge').innerHTML = renderStatusBadgeHtml(cp.blood_group || 'Compatible');
+
+    document.getElementById('paramAboDesc').textContent = 'Antibody barrier assessment verified';
+    document.getElementById('paramAboBadge').innerHTML = renderStatusBadgeHtml(cp.abo_group || 'Compatible');
+
+    document.getElementById('paramRhDesc').textContent = 'Rhesus factor cross-tolerance validated';
+    document.getElementById('paramRhBadge').innerHTML = renderStatusBadgeHtml(cp.rh_factor || 'Compatible');
+
+    document.getElementById('paramAgeDesc').textContent = `Donor ${dAge} yrs vs Recipient ${rAge} yrs`;
+    document.getElementById('paramAgeBadge').innerHTML = renderStatusBadgeHtml(cp.age || 'Compatible');
+
+    document.getElementById('paramUrgencyDesc').textContent = `${data.recipient.urgency_level} allocation queue`;
+    document.getElementById('paramUrgencyBadge').innerHTML = renderStatusBadgeHtml(cp.medical_urgency || 'Compatible');
+
+    document.getElementById('paramPriorityDesc').textContent = `Waitlist time (${data.recipient.waiting_days} days) verified`;
+    document.getElementById('paramPriorityBadge').innerHTML = renderStatusBadgeHtml(cp.priority || 'Compatible');
+
+    document.getElementById('paramTissueDesc').textContent = `Crossmatch: ${data.recipient.crossmatch_status}`;
+    document.getElementById('paramTissueBadge').innerHTML = renderStatusBadgeHtml(cp.physiological_tissue || 'Compatible');
+
+    // 5. Matching Breakdown Table
+    const breakdownTbody = document.getElementById('breakdownTableBody');
+    breakdownTbody.innerHTML = '';
+    if (data.breakdown && data.breakdown.length > 0) {
+      data.breakdown.forEach(item => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${item.factor}</td>
+          <td style="text-align: center; color: var(--text-muted);">${item.max} pts</td>
+          <td style="text-align: right;"><strong class="points-val">${Number(item.score).toFixed(1)} / ${item.max}</strong></td>
+        `;
+        breakdownTbody.appendChild(tr);
+      });
+    }
+    document.getElementById('breakdownTotalScore').textContent = `${data.compatibility_score}%`;
+
+    // 6. AI Match Suggestion
+    document.getElementById('suggestionRationale').textContent = data.match_rationale;
+
+    const factorsList = document.getElementById('suggestionFactorsList');
+    factorsList.innerHTML = '';
+    if (data.best_match && data.best_match.reasons) {
+      data.best_match.reasons.forEach(r => {
+        const li = document.createElement('li');
+        li.textContent = `✓ ${r}`;
+        factorsList.appendChild(li);
+      });
+    }
+
+    if (data.best_match) {
+      document.getElementById('suggestionPriority').textContent = data.best_match.priority_level;
+    }
+
+    const warnBox = document.getElementById('suggestionWarningsBox');
+    const warnList = document.getElementById('suggestionWarningsList');
+    warnList.innerHTML = '';
+    if (data.best_match && data.best_match.warnings && data.best_match.warnings.length > 0) {
+      warnBox.style.display = 'block';
+      data.best_match.warnings.forEach(w => {
+        const li = document.createElement('li');
+        li.textContent = `⚠ ${w}`;
+        warnList.appendChild(li);
+      });
+    } else {
+      warnBox.style.display = 'none';
+    }
+
+    const actList = document.getElementById('suggestionActionsList');
+    actList.innerHTML = '';
+    if (data.optimization_suggestions) {
+      data.optimization_suggestions.forEach(s => {
+        const li = document.createElement('li');
+        li.textContent = `➔ ${s}`;
+        actList.appendChild(li);
+      });
+    }
+
+    // 7. Alternative Matches Table
+    const altTbody = document.getElementById('alternativesTableBody');
+    altTbody.innerHTML = '';
+    const alts = data.alternative_matches || [];
+    document.getElementById('altCandidatesCount').textContent = alts.length;
+
+    if (alts.length > 0) {
+      alts.forEach(cand => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td><strong>#${cand.donor_id}</strong></td>
+          <td>${cand.organ}</td>
+          <td>${cand.donor_name} (${cand.age} yrs, ${cand.blood_group})</td>
+          <td>${cand.hospital_city}</td>
+          <td>${cand.priority_level || 'Secondary'}</td>
+          <td><span class="status-cleared">✓ ${cand.status}</span></td>
+          <td style="text-align: right;">
+            <span class="alt-score-badge">${cand.compatibility_score}%</span>
+          </td>
+        `;
+        altTbody.appendChild(tr);
+      });
+    } else {
+      altTbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: var(--text-muted); padding: 20px;">No secondary matching candidates found in cohort.</td></tr>`;
+    }
+
+    // Update Modal
+    updateModalFields(data);
+  }
+
+  function updateModalFields(data) {
+    document.getElementById('modalRecipId').textContent = data.recipient.patient_id;
+    document.getElementById('modalRecipName').textContent = data.recipient.name;
+    document.getElementById('modalRecipAgeGender').textContent = `${data.recipient.age} yrs / ${data.recipient.gender}`;
+    document.getElementById('modalRecipOrgan').textContent = data.recipient.organ;
+    document.getElementById('modalRecipBlood').textContent = data.recipient.blood_group;
+    document.getElementById('modalRecipCity').textContent = data.recipient.hospital_city;
+    document.getElementById('modalRecipUrgency').textContent = data.recipient.urgency_level;
+    document.getElementById('modalRecipWaiting').textContent = `${data.recipient.waiting_days} Days`;
+
+    if (data.best_match) {
+      document.getElementById('modalDonorId').textContent = '#' + data.best_match.donor_id;
+      document.getElementById('modalDonorName').textContent = data.best_match.donor_name;
+      document.getElementById('modalDonorAgeGender').textContent = `${data.best_match.age} yrs / ${data.best_match.gender}`;
+      document.getElementById('modalDonorOrgan').textContent = data.best_match.organ;
+      document.getElementById('modalDonorBlood').textContent = data.best_match.blood_group;
+      document.getElementById('modalDonorCity').textContent = data.best_match.hospital_city;
+      document.getElementById('modalDonorPriority').textContent = data.best_match.priority_level;
+      document.getElementById('modalDonorStatus').textContent = '✓ ' + data.best_match.status;
+    }
+
+    const modalList = document.getElementById('modalBreakdownList');
+    modalList.innerHTML = '';
+    if (data.breakdown && data.breakdown.length > 0) {
+      data.breakdown.forEach(item => {
+        const row = document.createElement('div');
+        row.className = 'modal-breakdown-row';
+        row.innerHTML = `
+          <span>${item.factor} (Max ${item.max} pts)</span>
+          <strong>${Number(item.score).toFixed(1)} / ${item.max} pts</strong>
+        `;
+        modalList.appendChild(row);
+      });
+      const totalRow = document.createElement('div');
+      totalRow.className = 'modal-breakdown-total';
+      totalRow.innerHTML = `
+        <span>Final Algorithmic Match Score:</span>
+        <strong id="modalOverallScore">${data.compatibility_score}%</strong>
+      `;
+      modalList.appendChild(totalRow);
+    }
+  }
+
+  function openMatchDetailsModal() {
+    updateModalFields(currentMatchData);
+    document.getElementById('matchDetailsModal').style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeMatchDetailsModal() {
+    document.getElementById('matchDetailsModal').style.display = 'none';
+    document.body.style.overflow = '';
+  }
+</script>
+
+  </div><!-- /.main-content -->
+</div><!-- /.layout -->
+</body>
+</html>
