@@ -20,7 +20,15 @@
 
         <div class="form-group" style="margin-bottom: 20px;">
           <label for="password">Password</label>
-          <input type="password" id="password" name="password" class="form-input" placeholder="••••••••" required>
+          <div class="password-input-wrapper">
+            <input type="password" id="password" name="password" class="form-input" placeholder="••••••••" required>
+            <button type="button" class="password-toggle-btn" id="toggleLoginPasswordBtn" aria-label="Toggle password visibility" title="Show password" onclick="togglePasswordVisibility('password', this)">
+              <svg class="eye-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+              </svg>
+            </button>
+          </div>
         </div>
 
         <button type="submit" class="btn btn-primary btn-lg" style="width: 100%; margin-bottom: 20px;">

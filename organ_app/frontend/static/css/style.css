@@ -1206,6 +1206,51 @@ img, svg {
   box-shadow: 0 0 0 3px var(--primary-glow);
 }
 
+/* Password Toggle Eye Wrapper */
+.password-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.password-input-wrapper .form-input {
+  padding-right: 42px;
+}
+
+.password-toggle-btn {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+  border-radius: 4px;
+  transition: color 0.2s ease, transform 0.15s ease;
+  z-index: 2;
+}
+
+.password-toggle-btn:hover {
+  color: var(--primary);
+}
+
+.password-toggle-btn:active {
+  transform: translateY(-50%) scale(0.92);
+}
+
+.password-toggle-btn svg {
+  width: 19px;
+  height: 19px;
+  stroke: currentColor;
+}
+
+
 /* Upload Dropzone */
 .ocr-dropzone {
   border: 2px dashed var(--border-color);
